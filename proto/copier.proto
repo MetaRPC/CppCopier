@@ -1,0 +1,145 @@
+syntax = "proto3";
+
+option csharp_namespace = "tradecopy.Grpc";
+
+package copier;
+
+// Trade copier operations over gRPC.
+//
+// Credentials (passwords) are strictly carried in the request body over HTTP/2 gRPC,
+// preventing plain-text credential leakage in HTTP query parameters, server access logs,
+// or proxy routing histories.
+service CopierService {
+  // Start a trade copier between master and slave accounts.
+  rpc Start (StartRequest) returns (StartReply);
+
+  // List all active and paused copiers belonging to a user.
+  rpc List (ListRequest) returns (ListReply);
+
+  // Pause or resume an existing copier without deleting configuration.
+  rpc Pause (PauseRequest) returns (SimpleReply);
+
+  // Remove a copier and unregister trade hooks.
+  rpc Remove (RemoveRequest) returns (SimpleReply);
+}
+
+// MetaTrader trading account connection descriptor.
+message Account {
+  // Account protocol type: "MT4" or "MT5".
+  string type = 1;
+  // Account login number / user id.
+  uint64 user = 2;
+  // Account trading password.
+  string password = 3;
+  // Broker terminal server name (e.g. "MetaQuotes-Demo").
+  string server = 4;
+  // Optional friendly label or display name.
+  string name = 5;
+}
+
+// Parameters to initialize and start real-time trade copying.
+message StartRequest {
+  // Client user key for billing and authorization.
+  string user_key = 1;
+  // Manager or owner key configuring this copier instance.
+  string manager_key = 2;
+
+  // Source master account whose trades are copied.
+  Account master = 3;
+  // Target slave account where trades are replicated.
+  Account slave = 4;
+
+  // Risk calculation model:
+  // "FixedLot" | "LotMultiplier" | "BalanceMultiplier" | "FixedBalanceMultiplier" | "EquityMultiplier"
+  string risk_type = 5;
+  // Sizing parameter formatted as decimal string (e.g. "1.0", "0.01", "2.5").
+  string risk_value = 6;
+  // Baseline master balance required when risk_type is "FixedBalanceMultiplier".
+  string fixed_master_balance = 7;
+
+  // Synchronize Stop Loss modifications from master to slave.
+  bool copy_sl = 8;
+  // Synchronize Take Profit modifications from master to slave.
+  bool copy_tp = 9;
+  // Copy pending orders (Buy Limit, Sell Limit, Buy Stop, Sell Stop).
+  bool copy_pending_orders = 10;
+  // Invert order directions: BUY -> SELL and SELL -> BUY.
+  bool reverse_copy = 11;
+}
+
+message StartReply {
+  // True if copier was created and successfully attached.
+  bool ok = 1;
+  // Unique copier instance UUID.
+  string copier_id = 2;
+  // Descriptive error message if start failed.
+  string error = 3;
+}
+
+message ListRequest {
+  // Filter copiers belonging to this user key.
+  string user_key = 1;
+}
+
+// Sanitized copier summary that never exposes trading account passwords.
+message CopierSummary {
+  string id = 1;
+  string master_type = 2;
+  uint64 master_user = 3;
+  string master_server = 4;
+  string slave_type = 5;
+  uint64 slave_user = 6;
+  string slave_server = 7;
+  string risk_type = 8;
+  string risk_value = 9;
+  bool paused = 10;
+  string pause_reason = 11;
+}
+
+message ListReply {
+  bool ok = 1;
+  repeated CopierSummary copiers = 2;
+  string error = 3;
+}
+
+message PauseRequest {
+  string user_key = 1;
+  string copier_id = 2;
+  bool paused = 3;
+}
+
+message RemoveRequest {
+  string user_key = 1;
+  string copier_id = 2;
+}
+
+message SimpleReply {
+  bool ok = 1;
+  string error = 2;
+}
+
+// Demo account creation service definition
+service DemoAccount {
+  // Provision a new MetaTrader demo account on the fly.
+  rpc OpenDemoAccount (GuiDemoOpenAccountRequest) returns (GuiDemoOpenAccountReply);
+}
+
+message GuiDemoOpenAccountRequest {
+  string company = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string email = 4;
+  string phone = 5;
+  string server = 6;
+  string account_type = 7;
+  int32 timeout_seconds = 8;
+}
+
+message GuiDemoOpenAccountReply {
+  int32 result_code = 1;
+  uint64 login = 2;
+  string password = 3;
+  string investor = 4;
+  string server = 5;
+  string debug_log = 6;
+}

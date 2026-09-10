@@ -1,0 +1,88 @@
+site_name: CppCopier Documentation
+site_url: https://metarpc.github.io/CppCopier/
+site_description: Complete C++ SDK for MetaRPC Trade Copier trading automation via gRPC
+
+repo_name: MetaRPC/CppCopier
+repo_url: https://github.com/MetaRPC/CppCopier
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  language: en
+  font:
+    text: Inter
+    code: JetBrains Mono
+  icon:
+    logo: material/language-cpp
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tracking
+    - navigation.expand
+    - navigation.top
+    - navigation.footer
+    - content.code.copy
+    - toc.follow
+  custom_dir: docs/includes
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/MetaRPC/CppCopier
+      name: CppCopier on GitHub
+
+extra_css:
+  - styles/custom.css
+
+markdown_extensions:
+  - admonition
+  - md_in_html
+  - tables
+  - attr_list
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - toc:
+      permalink: "¶"
+      toc_depth: 3
+
+plugins:
+  - search
+
+copyright: >
+  Copyright © 2024–2026 MetaRPC. MT4 and MT5 are trademarks of MetaQuotes Software Corp.
+  This documentation is community-maintained and not affiliated with MetaQuotes.
+
+nav:
+  - Home: index.md
+
+  - Guides:
+    - Quick Start: All_Guides/Your_First_Project.md
+    - Getting Started: All_Guides/GETTING_STARTED.md
+    - Project Map: All_Guides/PROJECT_MAP.md
+    - Glossary: All_Guides/GLOSSARY.md
+
+  - API Reference:
+    - CopierService API: API_Reference/CopierService.md
+    - CopierAccount API: API_Reference/CopierAccount.md
+    - CopierSugar API: API_Reference/CopierSugar.md
+    - Copier Parameters: API_Reference/Copier_Parameters.md
+    - Input & Output Structs: API_Reference/Input_Output_Structs.md
+    - Demo Account Creation: API_Reference/Demo_Account_Creation.md
