@@ -13,4 +13,4 @@ cmake: find_package(CppCopier REQUIRED)
 
 ## Quick Start
 
-See [Quick Start Documentation](https://github.com/MetaRPC/CppCopier/tree/main/docsAll_Guides/Your_First_Project/) for a 10-minute walkthrough.
+See [Quick Start Documentation](https://github.com/MetaRPC/CppCopier/blob/main/docs/All_Guides/Your_First_Project.md) for a 10-minute walkthrough.
