@@ -1,20 +1,34 @@
 #include <copier/copier.hpp>
+#include <copier/demo.hpp>
 #include <iostream>
 
 int main() {
-    std::cout << "=== CppCopier Quick Start ===" << std::endl;
-    copier::CopierService client("copy.mrpc.pro:443", "YOUR_USER_KEY");
+    std::cout << "=== CppCopier Quick Start Demo ===" << std::endl;
+    std::string api_key = "TRIAL";
 
-    copier::StartRequest req;
-    req.master = {"MT5", 10001, "pass1", "MetaQuotes-Demo", "Master"};
-    req.slave = {"MT5", 10002, "pass2", "MetaQuotes-Demo", "Slave"};
-    req.risk_type = "LotMultiplier";
-    req.risk_value = "1.5";
+    copier::DemoAccountClient demo("mt5.mrpc.pro");
 
-    auto start_rep = client.Start(req);
-    std::cout << "Copier ID: " << start_rep.copier_id << std::endl;
+    // 1. Provision live demo account
+    std::cout << "\n[1] Provisioning live demo account on MetaQuotes-Demo..." << std::endl;
+    auto master = demo.OpenDemoAccount("MetaQuotes-Demo", api_key);
+    std::cout << "    Master Account Provisioned: #" << master.login << " on " << master.server << std::endl;
 
+    // 2. Connect terminal via ConnectEx with APIKey: TRIAL
+    std::cout << "\n[2] Connecting terminal via ConnectEx (APIKey: " << api_key << ")..." << std::endl;
+    auto conn = demo.ConnectEx(master.login, master.password, master.server, api_key);
+    std::cout << "    Terminal Connected! Instance GUID: " << conn.terminal_instance_guid << std::endl;
+
+    // 3. Interacting with Copier Service
+    std::cout << "\n[3] Interacting with Copier Service (user_key: " << api_key << ")..." << std::endl;
+    copier::CopierService client("copy.mrpc.pro:443", api_key);
     auto list_rep = client.List();
-    std::cout << "Active copiers: " << list_rep.copiers.size() << std::endl;
+    std::cout << "    Active copiers count: " << list_rep.copiers.size() << std::endl;
+
+    // 4. Cleanly Disconnect Terminal Session
+    std::cout << "\n[4] Disconnecting terminal session " << conn.terminal_instance_guid << "..." << std::endl;
+    auto disc = demo.Disconnect(conn.terminal_instance_guid, api_key);
+    std::cout << "    Terminal Cleanly Disconnected: " << disc.unique_identifier << " (Lifetime: " << disc.lifetime_seconds << "s)" << std::endl;
+
+    std::cout << "\n=== CppCopier Quick Start Completed Successfully ===" << std::endl;
     return 0;
 }
