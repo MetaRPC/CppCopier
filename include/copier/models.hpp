@@ -11,6 +11,7 @@ struct Account {
     std::string password;
     std::string server;
     std::string name;
+    std::string id;
 };
 
 struct StartRequest {

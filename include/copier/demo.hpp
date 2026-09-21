@@ -8,7 +8,17 @@
 
 #pragma comment(lib, "winhttp.lib")
 
+#include <vector>
+#include <algorithm>
+
 namespace copier {
+
+struct PositionInfo {
+    uint64_t ticket{0};
+    std::string symbol;
+    double volume{0.0};
+    std::string type;
+};
 
 struct DemoReply {
     int result_code{0};
@@ -68,6 +78,47 @@ public:
             rep.lifetime_seconds = std::stoi(lt);
         }
         return rep;
+    }
+
+    static std::string ToHyphenGuid(std::string guid) {
+        size_t p = guid.find("mt5_live_");
+        if (p != std::string::npos) guid.erase(p, 9);
+        guid.erase(std::remove(guid.begin(), guid.end(), '-'), guid.end());
+        if (guid.length() < 32) return guid;
+        return guid.substr(0, 8) + "-" + guid.substr(8, 4) + "-" + guid.substr(12, 4) + "-" + guid.substr(16, 4) + "-" + guid.substr(20, 12);
+    }
+
+    uint64_t OrderSend(const std::string& terminal_id, const std::string& symbol, const std::string& operation, double volume, const std::string& api_key = "TRIAL") {
+        std::ostringstream oss;
+        oss << "/OrderSend?id=" << UrlEncode(terminal_id) << "&symbol=" << UrlEncode(symbol) << "&operation=" << UrlEncode(operation) << "&volume=" << volume;
+        std::string body = HttpRequest("GET", oss.str(), api_key, terminal_id);
+        std::string ord = ExtractNumber(body, "order");
+        if (ord.empty()) ord = ExtractNumber(body, "ticket");
+        return ord.empty() ? 0 : std::stoull(ord);
+    }
+
+    std::vector<PositionInfo> OpenedOrders(const std::string& terminal_id, const std::string& api_key = "TRIAL") {
+        std::string path = "/OpenedOrders?id=" + UrlEncode(terminal_id);
+        std::string body = HttpRequest("GET", path, api_key, terminal_id);
+        std::vector<PositionInfo> list;
+        std::regex re("\"ticket\"\\s*:\\s*([0-9]+)");
+        auto words_begin = std::sregex_iterator(body.begin(), body.end(), re);
+        auto words_end = std::sregex_iterator();
+        for (std::sregex_iterator i = words_begin; i != words_end; ++i) {
+            std::smatch match = *i;
+            PositionInfo pi;
+            pi.ticket = std::stoull(match[1].str());
+            pi.symbol = ExtractString(body, "symbol");
+            pi.type = ExtractString(body, "type");
+            list.push_back(pi);
+        }
+        return list;
+    }
+
+    std::string OrderClose(const std::string& terminal_id, uint64_t ticket, const std::string& api_key = "TRIAL") {
+        std::ostringstream oss;
+        oss << "/OrderClose?id=" << UrlEncode(terminal_id) << "&ticket=" << ticket << "&volume=0&slippage=20";
+        return HttpRequest("GET", oss.str(), api_key, terminal_id);
     }
 
 private:
