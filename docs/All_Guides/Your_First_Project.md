@@ -24,7 +24,7 @@ In this guide you will:
 
 int main() {
     // 1. Connect to Trade Copier gRPC Gateway
-    copier::CopierService client("copy.mrpc.pro:443", "YOUR_USER_KEY", "YOUR_MANAGER_KEY");
+    copier::CopierService client("copy.mrpc.pro:443", "YOUR_USER_KEY");
 
     // 2. Define Accounts
     copier::Account master{"MT5", 10001, "demoPassword1", "MetaQuotes-Demo", "MasterAccount"};
@@ -33,8 +33,7 @@ int main() {
     // 3. Start Copier
     copier::StartRequest req;
     req.user_key = "YOUR_USER_KEY";
-    req.manager_key = "YOUR_MANAGER_KEY";
-    req.master = master;
+        req.master = master;
     req.slave = slave;
     req.risk_type = "LotMultiplier";
     req.risk_value = "1.5";

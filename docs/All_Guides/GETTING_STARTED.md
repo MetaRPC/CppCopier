@@ -23,8 +23,7 @@ MetaRPC provides dedicated production and staging environments for the Trade Cop
 
 To authenticate your API calls, obtain your API keys from the [MetaRPC Portal](https://mrpc.pro/portal):
 
-1. **User Key (`user_key`)**: Identifies your MetaRPC account and subscription tier.
-2. **Manager Key (`manager_key`)**: Identifies the copier manager role. In self-service setups, `manager_key` can be the same as your `user_key`.
+1. **User Key (`user_key`)**: Identifies your MetaRPC account and authorizes all trade copier operations.
 
 ## Why gRPC?
 

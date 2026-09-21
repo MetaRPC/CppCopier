@@ -8,7 +8,7 @@
 
 ```csharp
 var copier = await CopierSugar.Create()
-    .WithCredentials("YOUR_USER_KEY", "YOUR_MANAGER_KEY")
+    .WithCredentials("YOUR_USER_KEY")
     .FromMaster(master => master
         .Type("MT5")
         .User(10001)

@@ -846,12 +846,11 @@
 <h2 id="header-metadata">Header Metadata<a class="headerlink" href="#header-metadata" title="Permanent link">¶</a></h2>
 <p>All gRPC requests automatically inject the following HTTP/2 metadata headers:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="err">authorization: Bearer &lt;user_key&gt;</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="err">x-metarpc-manager: &lt;manager_key&gt;</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="err">x-metarpc-client-sdk: CppCopier/1.0.0</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="err">x-metarpc-client-sdk: CppCopier/1.0.0</span>
 </code></pre></div>
 <h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">¶</a></h2>
 <p>Standard gRPC status codes are translated into idiomatic C++ exceptions:
-- <code>UNAUTHENTICATED (16)</code>: Invalid user key or manager key.
+- <code>UNAUTHENTICATED (16)</code>: Invalid user key.
 - <code>INVALID_ARGUMENT (3)</code>: Malformed account number, missing server, or unsupported risk type.
 - <code>NOT_FOUND (5)</code>: Specified <code>copier_id</code> does not exist or has already been removed.
 - <code>UNAVAILABLE (14)</code>: Temporary connection issue with automatic exponential backoff.</p>

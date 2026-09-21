@@ -22,7 +22,7 @@ message Account {
 ```protobuf
 message StartRequest {
   string user_key = 1;
-  string manager_key = 2;
+  string manager_key = 2; // Optional, automatically defaults to user_key if omitted
   Account master = 3;
   Account slave = 4;
   string risk_type = 5;
@@ -149,3 +149,4 @@ message GuiDemoOpenAccountReply {
   string debug_log = 6;
 }
 ```
+

@@ -893,8 +893,7 @@
 <h2 id="authentication-credentials">Authentication &amp; Credentials<a class="headerlink" href="#authentication-credentials" title="Permanent link">¶</a></h2>
 <p>To authenticate your API calls, obtain your API keys from the <a href="https://mrpc.pro/portal">MetaRPC Portal</a>:</p>
 <ol>
-<li><strong>User Key (<code>user_key</code>)</strong>: Identifies your MetaRPC account and subscription tier.</li>
-<li><strong>Manager Key (<code>manager_key</code>)</strong>: Identifies the copier manager role. In self-service setups, <code>manager_key</code> can be the same as your <code>user_key</code>.</li>
+<li><strong>User Key (<code>user_key</code>)</strong>: Identifies your MetaRPC account and authorizes all trade copier operations.</li>
 </ol>
 <h2 id="why-grpc">Why gRPC?<a class="headerlink" href="#why-grpc" title="Permanent link">¶</a></h2>
 <p>Traditional trade copiers expose trading account passwords in REST query strings (e.g. <code>GET /start?password=xyz</code>), leaving passwords exposed in ingress proxies, cloud logs, and browser caches.</p>
