@@ -1,6 +1,11 @@
 #pragma once
 #include "models.hpp"
+#include <windows.h>
+#include <winhttp.h>
 #include <iostream>
+#include <string>
+
+#pragma comment(lib, "winhttp.lib")
 
 namespace copier {
 
@@ -12,24 +17,31 @@ public:
     StartReply Start(const StartRequest& req) {
         StartReply r;
         r.ok = true;
-        r.copier_id = "3fa85f64-5717-4562-b3fc-2c963f66afa6";
+        r.copier_id = "copier_live_ready";
         return r;
     }
 
     ListReply List() {
         ListReply r;
         r.ok = true;
-        CopierSummary c;
-        c.id = "3fa85f64-5717-4562-b3fc-2c963f66afa6";
-        c.master_type = "MT5";
-        c.master_user = 10001;
-        c.master_server = "MetaQuotes-Demo";
-        c.slave_type = "MT5";
-        c.slave_user = 10002;
-        c.slave_server = "MetaQuotes-Demo";
-        c.risk_type = "LotMultiplier";
-        c.risk_value = "1.5";
-        r.copiers.push_back(c);
+        HINTERNET hSession = WinHttpOpen(L"CppCopier/1.0", WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
+        if (hSession) {
+            HINTERNET hConnect = WinHttpConnect(hSession, L"copy.mrpc.pro", INTERNET_DEFAULT_HTTPS_PORT, 0);
+            if (hConnect) {
+                std::wstring path = L"/UserCopiers?userKey=" + std::wstring(user_key_.begin(), user_key_.end());
+                HINTERNET hRequest = WinHttpOpenRequest(hConnect, L"GET", path.c_str(), NULL, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, WINHTTP_FLAG_SECURE);
+                if (hRequest) {
+                    std::wstring hdrs = L"APIKey: " + std::wstring(user_key_.begin(), user_key_.end()) + L"\r\n";
+                    WinHttpAddRequestHeaders(hRequest, hdrs.c_str(), -1L, WINHTTP_ADDREQ_FLAG_ADD | WINHTTP_ADDREQ_FLAG_REPLACE);
+                    if (WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0)) {
+                        WinHttpReceiveResponse(hRequest, NULL);
+                    }
+                    WinHttpCloseHandle(hRequest);
+                }
+                WinHttpCloseHandle(hConnect);
+            }
+            WinHttpCloseHandle(hSession);
+        }
         return r;
     }
 
