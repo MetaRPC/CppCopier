@@ -68,8 +68,9 @@ public:
         return rep;
     }
 
-    DisconnectReply Disconnect(const std::string& terminal_id, const std::string& api_key = "TRIAL") {
-        std::string body = HttpRequest("GET", "/Disconnect", api_key, terminal_id);
+    DisconnectReply Disconnect(const std::string& terminal_id, const std::string& api_key = "TRIAL", bool delete_terminal = false) {
+        std::string path = "/Disconnect?delete=" + std::string(delete_terminal ? "true" : "false");
+        std::string body = HttpRequest("GET", path, api_key, terminal_id, delete_terminal);
 
         DisconnectReply rep;
         rep.unique_identifier = ExtractString(body, "uniqueIdentifier");
@@ -156,7 +157,7 @@ private:
         return "";
     }
 
-    std::string HttpRequest(const std::string& method, const std::string& path, const std::string& api_key, const std::string& id_header = "") {
+    std::string HttpRequest(const std::string& method, const std::string& path, const std::string& api_key, const std::string& id_header = "", bool delete_header = false) {
         HINTERNET hSession = WinHttpOpen(L"CppCopier/1.0.0", WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
         if (!hSession) return "";
 
@@ -179,6 +180,9 @@ private:
         std::wstring headers = L"APIKey: " + std::wstring(api_key.begin(), api_key.end()) + L"\r\nUser-Agent: CppCopier/1.0.0\r\n";
         if (!id_header.empty()) {
             headers += L"id: " + std::wstring(id_header.begin(), id_header.end()) + L"\r\n";
+        }
+        if (delete_header) {
+            headers += L"delete: true\r\n";
         }
         WinHttpAddRequestHeaders(hRequest, headers.c_str(), -1L, WINHTTP_ADDREQ_FLAG_ADD | WINHTTP_ADDREQ_FLAG_REPLACE);
 

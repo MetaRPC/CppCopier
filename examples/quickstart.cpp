@@ -127,7 +127,7 @@ int main(int argc, char* argv[]) {
     std::cout << "\n[9] Disconnecting terminal sessions cleanly via /Disconnect..." << std::endl;
     if (!master_guid.empty()) {
         try {
-            auto disc_m = demo.Disconnect(master_guid, api_key);
+            auto disc_m = demo.Disconnect(master_guid, api_key, true);
             std::cout << "    Master Terminal Cleanly Disconnected: " << disc_m.unique_identifier << " (Lifetime: " << disc_m.lifetime_seconds << "s)" << std::endl;
         } catch (const std::exception& ex) {
             std::cout << "    Master disconnect error: " << ex.what() << std::endl;
@@ -135,7 +135,7 @@ int main(int argc, char* argv[]) {
     }
     if (!slave_guid.empty()) {
         try {
-            auto disc_s = demo.Disconnect(slave_guid, api_key);
+            auto disc_s = demo.Disconnect(slave_guid, api_key, true);
             std::cout << "    Slave Terminal Cleanly Disconnected:  " << disc_s.unique_identifier << " (Lifetime: " << disc_s.lifetime_seconds << "s)" << std::endl;
         } catch (const std::exception& ex) {
             std::cout << "    Slave disconnect error: " << ex.what() << std::endl;
