@@ -4,9 +4,10 @@
 #include <thread>
 #include <chrono>
 
-int main() {
+int main(int argc, char* argv[]) {
     std::cout << "=== MetaRPC CppCopier Trade Replication Quick Start ===" << std::endl;
-    std::string api_key = "TRIAL";
+    const char* env_key = std::getenv("MRPC_API_KEY");
+    std::string api_key = (argc > 1) ? argv[1] : (env_key ? env_key : "TRIAL");
     copier::DemoAccountClient demo("mt5.mrpc.pro");
     std::string master_guid;
     std::string slave_guid;
