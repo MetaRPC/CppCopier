@@ -8,7 +8,7 @@ Official C++ SDK for the MetaRPC Trade Copier high-performance trade replication
 ## Installation
 
 ```bash
-cmake: find_package(CppCopier REQUIRED)
+git clone https://github.com/MetaRPC/CppCopier.git
 ```
 
 ---

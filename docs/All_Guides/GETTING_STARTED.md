@@ -4,10 +4,10 @@ Welcome to **CppCopier**, the official C++ client library for MetaRPC's ultra-lo
 
 ## Installation
 
-Install CppCopier using your language's package manager:
+CppCopier is not published on a package registry; get it from the repository:
 
 ```bash
-cmake: find_package(CppCopier REQUIRED)
+git clone https://github.com/MetaRPC/CppCopier.git
 ```
 
 ## Infrastructure Endpoints
