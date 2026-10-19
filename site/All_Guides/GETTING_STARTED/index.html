@@ -858,8 +858,8 @@
 <h1 id="getting-started-with-cppcopier">Getting Started with CppCopier<a class="headerlink" href="#getting-started-with-cppcopier" title="Permanent link">¶</a></h1>
 <p>Welcome to <strong>CppCopier</strong>, the official C++ client library for MetaRPC's ultra-low latency Trade Copier engine.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">¶</a></h2>
-<p>Install CppCopier using your language's package manager:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>cmake:<span class="w"> </span>find_package<span class="o">(</span>CppCopier<span class="w"> </span>REQUIRED<span class="o">)</span>
+<p>CppCopier is not published on a package registry; get it from the repository:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/MetaRPC/CppCopier.git
 </code></pre></div>
 <h2 id="infrastructure-endpoints">Infrastructure Endpoints<a class="headerlink" href="#infrastructure-endpoints" title="Permanent link">¶</a></h2>
 <p>MetaRPC provides dedicated production and staging environments for the Trade Copier:</p>
@@ -883,9 +883,9 @@
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Staging</strong></td>
-<td style="text-align: left;"><code>copy-stg.mrpc.pro:443</code></td>
-<td style="text-align: left;"><code>https://copy-stg.mrpc.pro</code></td>
-<td style="text-align: left;"><code>wss://copy-stg.mrpc.pro</code></td>
+<td style="text-align: left;"><code>copyback-stg.mrpc.pro:443</code></td>
+<td style="text-align: left;"><code>https://copyback-stg.mrpc.pro</code></td>
+<td style="text-align: left;"><code>wss://copyback-stg.mrpc.pro</code></td>
 <td style="text-align: left;">Integration testing &amp; demo accounts</td>
 </tr>
 </tbody>

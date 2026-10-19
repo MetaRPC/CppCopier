@@ -17,7 +17,7 @@ MetaRPC provides dedicated production and staging environments for the Trade Cop
 | Environment | gRPC Endpoint | REST Base URL | WebSockets Base URL | Purpose |
 |:---|:---|:---|:---|:---|
 | **Production** | `copy.mrpc.pro:443` | `https://copy.mrpc.pro` | `wss://copy.mrpc.pro` | Live and funded accounts |
-| **Staging** | `copy-stg.mrpc.pro:443` | `https://copy-stg.mrpc.pro` | `wss://copy-stg.mrpc.pro` | Integration testing & demo accounts |
+| **Staging** | `copyback-stg.mrpc.pro:443` | `https://copyback-stg.mrpc.pro` | `wss://copyback-stg.mrpc.pro` | Integration testing & demo accounts |
 
 ## Authentication & Credentials
 
