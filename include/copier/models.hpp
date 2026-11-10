@@ -29,7 +29,7 @@ struct StartRequest {
 };
 
 struct StartReply {
-    bool ok{true};
+    bool ok{false};
     std::string copier_id;
     std::string error;
 };
@@ -49,13 +49,13 @@ struct CopierSummary {
 };
 
 struct ListReply {
-    bool ok{true};
+    bool ok{false};
     std::vector<CopierSummary> copiers;
     std::string error;
 };
 
 struct SimpleReply {
-    bool ok{true};
+    bool ok{false};
     std::string error;
 };
 

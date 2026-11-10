@@ -9,6 +9,16 @@
 #pragma comment(lib, "winhttp.lib")
 
 namespace copier {
+inline bool valid_api_key(const std::string& key) {
+    if (key.empty() || _stricmp(key.c_str(), "TRIAL") == 0) return false;
+    for (unsigned char c : key) if (c < 33 || c > 126) return false;
+    return true;
+}
+inline std::wstring auth_headers(const std::string& key) {
+    if (!valid_api_key(key)) throw std::invalid_argument("A real owner API key is required");
+    return L"Content-Type: application/grpc\r\nTE: trailers\r\napikey: " + std::wstring(key.begin(), key.end()) + L"\r\n";
+}
+
 
 inline void write_varint(std::vector<uint8_t>& buf, uint64_t val) {
     while ((val & ~0x7FULL) != 0) {
@@ -53,6 +63,7 @@ inline bool read_varint(const uint8_t*& ptr, const uint8_t* end, uint64_t& val) 
     int shift = 0;
     while (ptr < end && shift < 64) {
         uint8_t b = *ptr++;
+        if (shift == 63 && b > 1) return false;
         val |= (static_cast<uint64_t>(b & 0x7F) << shift);
         if ((b & 0x80) == 0) return true;
         shift += 7;
@@ -84,7 +95,8 @@ inline bool skip_field(const uint8_t*& ptr, const uint8_t* end, int wire_type) {
 
 inline bool call_grpc_http2(const std::string& host, int port, const std::string& path,
                            const std::vector<uint8_t>& req_payload, std::vector<uint8_t>& resp_payload,
-                           std::string& err_msg) {
+                           std::string& err_msg, const std::string& api_key) {
+    if (!valid_api_key(api_key)) { err_msg = "Invalid API key"; return false; }
     HINTERNET hSession = WinHttpOpen(L"CppCopier-gRPC/1.0", WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
     if (!hSession) {
         err_msg = "WinHttpOpen failed: " + std::to_string(GetLastError());
@@ -114,7 +126,7 @@ inline bool call_grpc_http2(const std::string& host, int port, const std::string
     WinHttpSetOption(hRequest, WINHTTP_OPTION_ENABLE_HTTP_PROTOCOL, &http2_opt, sizeof(http2_opt));
     WinHttpSetTimeouts(hRequest, 30000, 30000, 180000, 180000);
 
-    std::wstring headers = L"Content-Type: application/grpc\r\nTE: trailers\r\n";
+    std::wstring headers = auth_headers(api_key);
     WinHttpAddRequestHeaders(hRequest, headers.c_str(), -1L, WINHTTP_ADDREQ_FLAG_ADD | WINHTTP_ADDREQ_FLAG_REPLACE);
 
     // Frame: 5-byte header + req_payload
@@ -170,13 +182,15 @@ inline bool call_grpc_http2(const std::string& host, int port, const std::string
     WinHttpCloseHandle(hConnect);
     WinHttpCloseHandle(hSession);
 
+    if (raw_resp.size() < 5) { err_msg = "Missing gRPC response frame"; return false; }
     // Unframe 5-byte header
     if (raw_resp.size() >= 5) {
         uint32_t payload_len = (static_cast<uint32_t>(raw_resp[1]) << 24) |
                                (static_cast<uint32_t>(raw_resp[2]) << 16) |
                                (static_cast<uint32_t>(raw_resp[3]) << 8) |
                                (static_cast<uint32_t>(raw_resp[4]));
-        size_t actual_len = min(static_cast<size_t>(payload_len), raw_resp.size() - 5);
+        if (raw_resp[0] != 0 || payload_len != raw_resp.size() - 5) { err_msg = "Invalid or truncated gRPC frame"; return false; }
+        size_t actual_len = payload_len;
         resp_payload.assign(raw_resp.begin() + 5, raw_resp.begin() + 5 + actual_len);
     }
     return true;

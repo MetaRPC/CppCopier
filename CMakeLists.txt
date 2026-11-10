@@ -13,4 +13,13 @@ target_include_directories(CppCopier INTERFACE
 )
 
 add_executable(quickstart examples/quickstart.cpp)
+target_link_libraries(CppCopier INTERFACE winhttp)
 target_link_libraries(quickstart PRIVATE CppCopier)
+
+add_executable(list_copiers examples/list.cpp)
+target_link_libraries(list_copiers PRIVATE CppCopier)
+
+enable_testing()
+add_executable(contract_tests tests/contract.cpp)
+target_link_libraries(contract_tests PRIVATE CppCopier)
+add_test(NAME contract COMMAND contract_tests)

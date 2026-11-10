@@ -34,7 +34,7 @@ public:
 
         std::vector<uint8_t> resp;
         std::string err;
-        if (!call_grpc_http2(host_, port_, "/copier.CopierService/Start", payload, resp, err)) {
+        if (!call_grpc_http2(host_, port_, "/copier.CopierService/Start", payload, resp, err, user_key_)) {
             r.ok = false;
             r.error = err;
             return r;
@@ -73,7 +73,7 @@ public:
 
         std::vector<uint8_t> resp;
         std::string err;
-        if (!call_grpc_http2(host_, port_, "/copier.CopierService/List", payload, resp, err)) {
+        if (!call_grpc_http2(host_, port_, "/copier.CopierService/List", payload, resp, err, user_key_)) {
             r.ok = false;
             r.error = err;
             return r;
@@ -116,7 +116,7 @@ public:
 
         std::vector<uint8_t> resp;
         std::string err;
-        if (!call_grpc_http2(host_, port_, "/copier.CopierService/Pause", payload, resp, err)) {
+        if (!call_grpc_http2(host_, port_, "/copier.CopierService/Pause", payload, resp, err, user_key_)) {
             r.ok = false;
             r.error = err;
             return r;
@@ -132,7 +132,7 @@ public:
 
         std::vector<uint8_t> resp;
         std::string err;
-        if (!call_grpc_http2(host_, port_, "/copier.CopierService/Remove", payload, resp, err)) {
+        if (!call_grpc_http2(host_, port_, "/copier.CopierService/Remove", payload, resp, err, user_key_)) {
             r.ok = false;
             r.error = err;
             return r;

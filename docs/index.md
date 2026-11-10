@@ -1,55 +1,53 @@
-# CppCopier Documentation
+---
+hide:
+  - toc
+---
+<div class="hero"><span class="eyebrow">METARPC / DEVELOPER GUIDES</span><h1>Trade copying.<br>Built with C++.</h1><p>From your first authenticated request to a monitored master–follower workflow. Clear examples, explicit sizing and practical recovery.</p><a class="md-button md-button--primary" href="quickstart/">Start building →</a> <a class="md-button" href="reference/">Explore the API</a><div class="hero-meta">TLS transport · Owner authentication · Demo-first validation</div></div>
 
-> ℹ️ **Security Notice**: MetaRPC Trade Copier transmits all account credentials exclusively via secure gRPC request payloads over HTTP/2 TLS (`copy.mrpc.pro:443`). No trading passwords are ever stored or exposed in query parameters, server logs, or URL strings.
+<div class="grid cards" markdown>
 
-**Official C++ SDK for MetaRPC Trade Copier high-performance trade replication via gRPC.**
+- **01 · Connect with confidence**
 
-<div class="home-grid">
+    Understand keys, account IDs and transport before sending a request.
 
-<!-- Top Card (0) - Quick Start - Red-Orange -->
-<a href="All_Guides/Your_First_Project/" class="card card-0">
-  <span class="material-symbols-rounded">rocket_launch</span>
-  <h3>Quick Start</h3>
-  <p>Your first project from scratch in 10 minutes</p>
-</a>
+    [Authentication →](authentication.md)
 
-<!-- Wide Card (1) - Getting Started - Yellow-Orange-Pink -->
-<a href="All_Guides/GETTING_STARTED/" class="card card-1 card-wide">
-  <span class="material-symbols-rounded">bolt</span>
-  <h3>Getting Started</h3>
-  <p>New here? Start with setup and overview</p>
-</a>
+- **02 · Control the lifecycle**
 
-<!-- Middle Row (2-3) - Yellow-Blue & Purple -->
-<a href="All_Guides/PROJECT_MAP/" class="card card-2">
-  <span class="material-symbols-rounded">map</span>
-  <h3>Project Map</h3>
-  <p>Architecture overview</p>
-</a>
+    Start once, inspect state, pause and clean up your test.
 
-<a href="All_Guides/GLOSSARY/" class="card card-3">
-  <span class="material-symbols-rounded">menu_book</span>
-  <h3>Glossary</h3>
-  <p>Trade Copier terms and concepts</p>
-</a>
+    [Copier lifecycle →](lifecycle.md)
 
-<!-- Bottom Row (4-5-6) - Teal, Mint, Green -->
-<a href="API_Reference/CopierService/" class="card card-4">
-  <span class="material-symbols-rounded">build</span>
-  <h3>CopierService</h3>
-  <p>Wrapper methods layer</p>
-</a>
+- **03 · Make sizing explicit**
 
-<a href="API_Reference/CopierAccount/" class="card card-5">
-  <span class="material-symbols-rounded">settings</span>
-  <h3>CopierAccount</h3>
-  <p>Low-level gRPC protocol layer</p>
-</a>
+    Choose lot, balance or equity sizing and account for broker constraints.
 
-<a href="API_Reference/CopierSugar/" class="card card-6">
-  <span class="material-symbols-rounded">auto_awesome</span>
-  <h3>CopierSugar</h3>
-  <p>High-level convenience API</p>
-</a>
+    [Sizing and settings →](sizing.md)
+
+- **04 · Diagnose the result**
+
+    Separate network success from management success and broker execution.
+
+    [Troubleshooting →](troubleshooting.md)
 
 </div>
+
+## Your first successful request
+
+Requires Windows with HTTP/2 support, Visual Studio C++ Build Tools and CMake 3.15+. Install dependencies and run the read-only List example. Keep your key in `MRPC_API_KEY`.
+
+```cpp
+#include <copier/copier.hpp>
+#include <cstdlib>
+#include <iostream>
+int main() {
+    const char* key = std::getenv("MRPC_API_KEY");
+    if (!key || !*key) { std::cerr << "Set MRPC_API_KEY\n"; return 1; }
+    copier::CopierService service("copy.mrpc.pro:443", key);
+    auto result = service.List();
+    if (!result.ok) { std::cerr << result.error << "\n"; return 1; }
+    for (const auto& item : result.copiers) std::cout << item.id << ": paused=" << item.paused << "\n";
+}
+```
+
+[Full setup](quickstart.md) · [Testing guide](testing.md) · [All SDKs](sdks.md)
