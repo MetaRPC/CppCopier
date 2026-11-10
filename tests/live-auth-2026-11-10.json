@@ -5,8 +5,8 @@
   "empty_key_rejected": true,
   "environment": "https://copyback-stg.mrpc.pro",
   "date": "2026-11-10",
-  "trade_execution": "blocked: staging MT5 terminal limit reached",
-  "trades_placed": 0,
+  "trade_execution": "passed: see live-trading-2026-11-10.json",
+  "trades_placed": 13,
   "rest_and_websocket_header_checks": [
     {
       "credential": "valid",

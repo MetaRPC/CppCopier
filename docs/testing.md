@@ -36,24 +36,30 @@ cmake --build build --config Release
 ctest --test-dir build -C Release --output-on-failure
 ```
 
-The November 10 audit passed the SDK build/tests and strict documentation/link checks in GitHub Actions. Tests cover the implemented transport, key validation and relevant regression cases; they are not a claim that live broker replication was performed.
+The November 10 audit passed the SDK build/tests and strict documentation/link checks in GitHub Actions. Offline tests cover transport, key validation and relevant regressions. The separate live acceptance results below verify broker replication.
 
 ## Live verification: November 10, 2026
 
-The native client was tested against `copyback-stg.mrpc.pro` after correcting the server's gRPC ingress route.
+The actual CppCopier client passed demo trading acceptance against `copyback-stg.mrpc.pro`, using a dedicated master/follower pair on **MT5 MetaQuotes-Demo**. The runner checked account identity, demo mode and empty positions before trading.
 
 | Check | Result |
 |---|---|
-| List using a valid owner key | Passed against the live service |
-| List using an invalid owner key | Rejected |
-| List using an empty owner key | Rejected, before connection where supported |
-| Guarded REST read and WebSocket log upgrade with the valid owner key | HTTP 200 / 101 |
-| Same REST read and WebSocket upgrade without ApiKey | HTTP 401 / 401 |
-| Same REST read and WebSocket upgrade with an invalid ApiKey | HTTP 403 / 403 |
-| Open and close replicated demo trades | Not run: staging terminal capacity reached |
-| Sizing, pause/resume and server trade logs | Not run: requires connected demo terminals |
+| Valid, missing and invalid owner key | Valid List succeeded; missing/invalid keys were refused |
+| REST and WebSocket header checks | Valid key: HTTP 200/101; missing: 401/401; invalid: 403/403 |
+| Invalid key attempting Pause | Refused; the owned copier remained usable |
+| Open and close replication | Six EURUSD master/follower pairs opened and closed |
+| LotMultiplier = 2 | 0.01 master lot copied as 0.02 follower lot, before and after resume |
+| FixedLot = 0.03 | Follower opened 0.03 lot |
+| BalanceMultiplier and EquityMultiplier = 2 | Follower volume matched the ratio calculated from current account values |
+| FixedBalanceMultiplier = 1 | With fixed master balance set to half the follower balance, 0.01 copied as 0.02 lot |
+| Pause | A new master trade produced no follower position during the six-second observation window |
+| Resume | A subsequent sell trade copied and closed successfully |
+| Trade logs | Successful streamed event matched the actual master and follower tickets |
+| Cleanup | Seven master and six follower positions closed; all five test copiers removed and absence verified |
 
-Two new disposable MT5 demo accounts were provisioned, but `ConnectEx` returned `MAX_TERMINALS_PER_POD_REACHED` at the staging host's 30-terminal limit. No trades were placed. These successful connection/authentication checks must not be presented as a completed trading acceptance test.
+This SDK exposes copier management operations; the test verified events through the authenticated WebSocket endpoint. The test used the SDK for Start, List, Pause, Resume and Remove; broker orders and position checks used MRPC terminal REST. This is an MT5 demo result, not MT4 broker execution coverage or an extended load test. The auth-only checks and sanitized trade evidence are stored in `tests/live-auth-2026-11-10.json` and `tests/live-trading-2026-11-10.json`.
+
+The run uncovered three backend faults: incorrectly escaped gRPC ingress routing, WebSocket events confined to one pod, and a pause handled by another pod leaving stale running state. Routing was corrected, log events now fan out through Redis, and follower sends check durable pause/removal state. The final matrix ran against backend commit `dcdaa53b` on all three staging pods. The terminal capacity blocker was resolved before this acceptance run. SDK demo helpers were also hardened so server errors cannot look like successful empty responses.
 
 Terminal REST helpers now reject an MRPC `error` envelope even when the HTTP status is 200, rather than returning an empty terminal ID, zero order ticket or empty position list. Offline regression tests cover this behavior. The cURL repository has no terminal-helper library; its acceptance adapter reports unsuccessful responses as failures.
 
