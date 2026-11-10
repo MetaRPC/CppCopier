@@ -14,6 +14,7 @@ class Page(HTMLParser):
             if attr in a:self.links.append(a[attr])
 pages={p:Page(p.read_text(encoding="utf-8")) for p in root.rglob("*.html")}
 errors=[]
+if not pages or not (root/"index.html").is_file(): errors.append("Documentation build is missing or empty")
 for file,page in pages.items():
     if file.name=="404.html":continue
     for link in page.links:

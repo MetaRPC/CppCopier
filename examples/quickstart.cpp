@@ -5,9 +5,11 @@
 #include <chrono>
 
 int main(int argc, char* argv[]) {
+    const char* enabled=std::getenv("MRPC_LIVE_TESTS");
+    if (!enabled || std::string(enabled)!="1") { std::cerr << "Set MRPC_LIVE_TESTS=1 explicitly to run demo trading\n"; return 1; }
     std::cout << "=== MetaRPC CppCopier Trade Replication Quick Start ===" << std::endl;
     const char* env_key = std::getenv("MRPC_API_KEY");
-    std::string api_key = (argc > 1) ? argv[1] : (env_key ? env_key : "TRIAL");
+    std::string api_key = (argc > 1) ? argv[1] : (env_key ? env_key : "");
     copier::DemoAccountClient demo("mt5.mrpc.pro");
     std::string master_guid;
     std::string slave_guid;
@@ -27,7 +29,7 @@ int main(int argc, char* argv[]) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
         // 2. Connect terminals via ConnectEx with APIKey: TRIAL
-        std::cout << "\n[2] Connecting terminals via ConnectEx (APIKey: " << api_key << ")..." << std::endl;
+        std::cout << "\n[2] Connecting terminals via ConnectEx (authenticated)..." << std::endl;
         auto conn_m = demo.ConnectEx(master.login, master.password, master.server, api_key);
         master_guid = conn_m.terminal_instance_guid;
         std::cout << "    Master Terminal Connected! GUID: " << master_guid << std::endl;

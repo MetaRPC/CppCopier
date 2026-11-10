@@ -54,6 +54,7 @@ nav:
       - First request: quickstart.md
       - Authentication: authentication.md
       - Copier lifecycle: lifecycle.md
+      - Lifecycle recipes: recipes.md
   - Build:
       - API reference: reference.md
       - Position sizing: sizing.md

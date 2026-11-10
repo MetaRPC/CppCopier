@@ -23,7 +23,7 @@ Set `MRPC_API_KEY` to your real owner API key in your environment, then run:
 .\build\Release\list_copiers.exe
 ```
 
-This List example is read-only: no account creation or trades. Java on Windows uses `;` instead of `:` in classpaths.
+This List example is read-only: no account creation or trades. Run CMake from a Visual Studio developer shell. The transport uses Windows WinHTTP.
 
 ## Authentication
 

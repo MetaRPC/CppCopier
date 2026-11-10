@@ -13,7 +13,7 @@ cmake -S . -B build
 cmake --build build --config Release
 ```
 
-Java on Windows uses `;` for classpath separators. Run C++ builds in a Visual Studio developer shell. Activate your Python virtual environment before installing.
+Run CMake from a Visual Studio developer shell. The transport uses Windows WinHTTP.
 
 ## 2. Set your owner key
 
