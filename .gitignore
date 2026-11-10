@@ -16,3 +16,9 @@ __pycache__/
 /node_modules/
 /dist/*.whl
 *.gem
+
+/build-live/
+
+# Local integration credentials and reports
+*.private.json
+*.private.txt

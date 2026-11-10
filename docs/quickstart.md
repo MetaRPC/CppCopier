@@ -13,7 +13,7 @@ cmake -S . -B build
 cmake --build build --config Release
 ```
 
-Run CMake from a Visual Studio developer shell. The transport uses Windows WinHTTP.
+Run CMake from a Visual Studio developer shell. The transport uses Windows WinHTTP. CMake downloads the pinned, SHA-256-verified nlohmann/json 3.11.3 dependency for the terminal helpers. Link the `CppCopier` CMake target so its JSON include path is available; a standalone consumer of `demo.hpp` must provide nlohmann/json as well.
 
 ## 2. Set your owner key
 

@@ -1,4 +1,5 @@
 #include <copier/copier.hpp>
+#include <copier/demo.hpp>
 #include <cassert>
 #include <iostream>
 int main() {
@@ -12,5 +13,15 @@ int main() {
   }
   uint8_t invalid[10]={255,255,255,255,255,255,255,255,255,127};const uint8_t* p=invalid;uint64_t value;
   if(copier::read_varint(p,p+10,value))return 5;
+  try {
+    copier::DemoAccountClient::ValidateResponse(R"({"error":{"errorCode":"MAX_TERMINALS_PER_POD_REACHED","stackTrace":"private trace"}})");
+    return 6;
+  } catch (const std::runtime_error& error) {
+    std::string message = error.what();
+    if(message.find("MAX_TERMINALS_PER_POD_REACHED")==std::string::npos || message.find("private trace")!=std::string::npos)return 7;
+  }
+  copier::DemoAccountClient::ValidateResponse(R"({"data":{"positionInfos":[]}})");
+  auto positions=copier::DemoAccountClient::ParsePositions(R"({"data":{"positionInfos":[{"ticket":9007199254740993,"symbol":"EURUSD","type":"BUY","volume":0.02},{"ticket":"9007199254740994","symbol":"GBPUSD","type":"SELL","volume":0.03}]}})");
+  if(positions.size()!=2 || positions[0].ticket!=9007199254740993ULL || positions[1].ticket!=9007199254740994ULL || positions[1].symbol!="GBPUSD" || positions[1].type!="SELL" || positions[1].volume!=0.03)return 8;
   std::cout<<"PASS: false replies, authentication, key injection refusal and uint64 boundaries\n";
 }

@@ -1,0 +1,10 @@
+{
+  "sdk": "CppCopier",
+  "authenticated_list": true,
+  "invalid_key_rejected": true,
+  "empty_key_rejected": true,
+  "environment": "https://copyback-stg.mrpc.pro",
+  "date": "2026-11-10",
+  "trade_execution": "blocked: staging MT5 terminal limit reached",
+  "trades_placed": 0
+}

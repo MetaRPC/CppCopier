@@ -2,7 +2,8 @@
 #include <windows.h>
 #include <winhttp.h>
 #include <string>
-#include <regex>
+#include <nlohmann/json.hpp>
+#include <stdexcept>
 #include <iostream>
 #include <sstream>
 
@@ -43,7 +44,7 @@ public:
     explicit DemoAccountClient(const std::string& host = "mt5.mrpc.pro") : host_(host) {}
 
     DemoReply OpenDemoAccount(const std::string& server = "MetaQuotes-Demo", const std::string& api_key = "TRIAL") {
-        std::string path = "/DemoAccount/Open?server=" + server;
+        std::string path = "/DemoAccount/Open?server=" + UrlEncode(server);
         std::string body = HttpRequest("GET", path, api_key);
 
         DemoReply rep;
@@ -101,16 +102,22 @@ public:
     std::vector<PositionInfo> OpenedOrders(const std::string& terminal_id, const std::string& api_key = "TRIAL") {
         std::string path = "/OpenedOrders?id=" + UrlEncode(terminal_id);
         std::string body = HttpRequest("GET", path, api_key, terminal_id);
+        return ParsePositions(body);
+    }
+
+    static std::vector<PositionInfo> ParsePositions(const std::string& body) {
+        ValidateResponse(body);
         std::vector<PositionInfo> list;
-        std::regex re("\"ticket\"\\s*:\\s*([0-9]+)");
-        auto words_begin = std::sregex_iterator(body.begin(), body.end(), re);
-        auto words_end = std::sregex_iterator();
-        for (std::sregex_iterator i = words_begin; i != words_end; ++i) {
-            std::smatch match = *i;
+        auto data = nlohmann::json::parse(body).at("data");
+        const auto& rows = data.at("positionInfos");
+        if (rows.is_null()) return list;
+        for (const auto& row : rows) {
             PositionInfo pi;
-            pi.ticket = std::stoull(match[1].str());
-            pi.symbol = ExtractString(body, "symbol");
-            pi.type = ExtractString(body, "type");
+            const auto& ticket = row.at("ticket");
+            pi.ticket = ticket.is_string() ? std::stoull(ticket.get<std::string>()) : ticket.get<uint64_t>();
+            pi.symbol = row.at("symbol").get<std::string>();
+            pi.volume = row.at("volume").get<double>();
+            pi.type = row.at("type").get<std::string>();
             list.push_back(pi);
         }
         return list;
@@ -139,33 +146,35 @@ private:
         return escaped.str();
     }
 
-    static std::string ExtractString(const std::string& json, const std::string& key) {
-        std::regex re("\"" + key + "\"\\s*:\\s*\"([^\"]*)\"");
-        std::smatch m;
-        if (std::regex_search(json, m, re) && m.size() > 1) {
-            return m[1].str();
-        }
-        return "";
+    static std::string ExtractString(const std::string& body, const std::string& key) {
+        auto root = nlohmann::json::parse(body);
+        const auto& data = root.contains("data") && root["data"].is_object() ? root["data"] : root;
+        if (!data.contains(key) || data[key].is_null()) return "";
+        return data[key].is_string() ? data[key].get<std::string>() : data[key].dump();
     }
+    static std::string ExtractNumber(const std::string& body, const std::string& key) { return ExtractString(body, key); }
 
-    static std::string ExtractNumber(const std::string& json, const std::string& key) {
-        std::regex re("\"" + key + "\"\\s*:\\s*([0-9]+)");
-        std::smatch m;
-        if (std::regex_search(json, m, re) && m.size() > 1) {
-            return m[1].str();
+public:
+    // Shared by all terminal helpers, including HTTP 200 business errors.
+    static void ValidateResponse(const std::string& body) {
+        auto root = nlohmann::json::parse(body);
+        if (!root.is_object()) throw std::runtime_error("Invalid MRPC response");
+        if (root.contains("error") && !root["error"].is_null() && root["error"] != false) {
+            const auto& error = root["error"];
+            auto code = error.is_object() ? error.value("errorCode", std::string("API_ERROR")) : "API_ERROR";
+            throw std::runtime_error("MRPC request failed: " + code);
         }
-        return "";
     }
-
+private:
     std::string HttpRequest(const std::string& method, const std::string& path, const std::string& api_key, const std::string& id_header = "", bool delete_header = false) {
         HINTERNET hSession = WinHttpOpen(L"CppCopier/1.0.0", WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
-        if (!hSession) return "";
+        if (!hSession) throw std::runtime_error("Cannot initialize WinHTTP");
 
         std::wstring wHost(host_.begin(), host_.end());
         HINTERNET hConnect = WinHttpConnect(hSession, wHost.c_str(), INTERNET_DEFAULT_HTTPS_PORT, 0);
         if (!hConnect) {
             WinHttpCloseHandle(hSession);
-            return "";
+            throw std::runtime_error("Cannot initialize HTTPS request");
         }
 
         std::wstring wMethod(method.begin(), method.end());
@@ -174,7 +183,7 @@ private:
         if (!hRequest) {
             WinHttpCloseHandle(hConnect);
             WinHttpCloseHandle(hSession);
-            return "";
+            throw std::runtime_error("Cannot initialize HTTPS request");
         }
 
         std::wstring headers = L"APIKey: " + std::wstring(api_key.begin(), api_key.end()) + L"\r\nUser-Agent: CppCopier/1.0.0\r\n";
@@ -189,12 +198,15 @@ private:
         WinHttpSetTimeouts(hRequest, 30000, 30000, 120000, 120000);
 
         std::string response;
+        DWORD status = 0, statusSize = sizeof(status);
+        bool complete = false;
         if (WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0) &&
             WinHttpReceiveResponse(hRequest, NULL)) {
+            WinHttpQueryHeaders(hRequest, WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER, WINHTTP_HEADER_NAME_BY_INDEX, &status, &statusSize, WINHTTP_NO_HEADER_INDEX);
             DWORD bytesRead = 0;
             char buffer[4096];
-            while (WinHttpReadData(hRequest, buffer, sizeof(buffer) - 1, &bytesRead) && bytesRead > 0) {
-                buffer[bytesRead] = '\0';
+            while (WinHttpReadData(hRequest, buffer, sizeof(buffer), &bytesRead)) {
+                if (!bytesRead) { complete = true; break; }
                 response.append(buffer, bytesRead);
             }
         }
@@ -202,6 +214,9 @@ private:
         WinHttpCloseHandle(hRequest);
         WinHttpCloseHandle(hConnect);
         WinHttpCloseHandle(hSession);
+        if (!complete) throw std::runtime_error("HTTPS request failed or response was truncated");
+        if (status < 200 || status >= 300) throw std::runtime_error("MRPC HTTP " + std::to_string(status));
+        ValidateResponse(response);
         return response;
     }
 };
