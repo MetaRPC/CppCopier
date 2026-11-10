@@ -31,6 +31,8 @@ Every SDK call sends `ApiKey` (`apikey` in gRPC metadata). The gRPC body also ca
 
 ## Scope and verification
 
+MT4 FreshForex-Demo and MT5 MetaQuotes-Demo acceptance passed on November 10, 2026: opens/closes, five sizing modes, pause/resume, live/persisted logs and API-key failures. See the [separate broker test evidence](https://metarpc.github.io/CppCopier/testing/).
+
 Core operations: Start · List · Pause · Remove. Advanced server features are distinguished from the supported wrapper surface. Review legacy replication examples before using them with disposable demos. Standard tests need no broker credentials.
 
 See [testing and contributing](https://metarpc.github.io/CppCopier/testing/) for the regression suite, demo checklist and Pages build. Edit `docs/`; generated `site/` output is not source.

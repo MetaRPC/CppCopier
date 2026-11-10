@@ -38,7 +38,47 @@ ctest --test-dir build -C Release --output-on-failure
 
 The November 10 audit passed the SDK build/tests and strict documentation/link checks in GitHub Actions. Offline tests cover transport, key validation and relevant regressions. The separate live acceptance results below verify broker replication.
 
-## Live verification: November 10, 2026
+## MT4 demo acceptance: November 10, 2026
+
+**Passed using the actual CppCopier client on MT4 FreshForex-Demo.** This is a separate broker execution run from the MT5 verification below. The runner checked the master and follower identities, demo-account status, currency and empty order lists before placing any trades.
+
+| Check | Observed result |
+|---|---|
+| Start, List and Remove | Five test copiers created; all removed and their absence verified |
+| Open and close | Six EURUSD master/follower pairs opened and closed |
+| LotMultiplier = 2 | 0.01 master lot copied as 0.02 follower lot, including the sell after resume |
+| FixedLot = 0.03 | Follower opened 0.03 lot |
+| BalanceMultiplier / EquityMultiplier = 2 | Follower lots matched the calculation from current account balances/equities, rounded to the 0.01 lot step |
+| FixedBalanceMultiplier = 1 | Fixed master balance set to half the follower balance; 0.01 copied as 0.02 lot |
+| Pause | A separate master trade produced no follower order throughout a six-second observation window |
+| Resume | A new sell copied successfully; closing the master also closed its follower |
+| Live and persisted logs | Streamed success event matched both broker tickets; `/TradeLogs` contained the master ticket |
+| ApiKey errors | Empty/invalid owner keys failed List; missing/invalid headers failed the copier read; an invalid-key Pause was rejected |
+| Cleanup | Seven master and six follower trades closed; both order lists empty |
+
+Trade events were checked through the authenticated WebSocket endpoint alongside this SDK’s copier-management calls. Start, List, Pause, Resume and Remove used this SDK. The runner placed and inspected demo broker orders through the MT4 terminal REST API. Sanitized tickets and check results are in [`tests/live-mt4-trading-2026-11-10.json`](https://github.com/MetaRPC/CppCopier/blob/main/tests/live-mt4-trading-2026-11-10.json).
+
+### Repeating the MT4 check
+
+Set the native acceptance adapter’s `COPIER_PLATFORM` environment variable to `MT4` before invoking it. The default remains `MT5`; other values are rejected. The 13 standard-input fields below are unchanged. Both account types will be `MT4`; provide MT4 demo credentials and their MT4 terminal GUIDs.
+
+```bash
+export COPIER_PLATFORM=MT4
+```
+
+In PowerShell, use `$env:COPIER_PLATFORM = 'MT4'`. Keep credentials outside the repository and supply them on standard input. Restore `MT5` or unset the variable before repeating the MT5 check.
+
+For a custom runner, use the MT4 REST contract:
+
+- Verify `/AccountSummary` reports the expected login and demo mode before any order.
+- Read `/OpenedOrders` from `data.orderInfos`; order volume is `lots` and direction is `orderType`. Refuse unexpected pending orders.
+- Send `/OrderSend` with `operationType=OC_OP_BUY` or `OC_OP_SELL`, the selected symbol and a broker-valid volume.
+- Close the exact owned ticket using `/OrderCloseDelete` with `orderTicket` and `lots`.
+- Wait for the follower order to appear and disappear, compare actual tickets/volumes, and verify its log event. A successful Start response alone is not evidence of replication.
+
+The run covered MT4-to-MT4 EURUSD on this demo broker. It does not establish MT4-to-MT5 behavior, every broker’s symbol/lot rules, pending-order copying or long-running load behavior. No new copier-backend fault was found in this matrix; it used the previously fixed routing, cross-pod logs and durable pause checks.
+
+## MT5 demo acceptance: November 10, 2026
 
 The actual CppCopier client passed demo trading acceptance against `copyback-stg.mrpc.pro`, using a dedicated master/follower pair on **MT5 MetaQuotes-Demo**. The runner checked account identity, demo mode and empty positions before trading.
 
@@ -57,7 +97,7 @@ The actual CppCopier client passed demo trading acceptance against `copyback-stg
 | Trade logs | Successful streamed event matched the actual master and follower tickets |
 | Cleanup | Seven master and six follower positions closed; all five test copiers removed and absence verified |
 
-This SDK exposes copier management operations; the test verified events through the authenticated WebSocket endpoint. The test used the SDK for Start, List, Pause, Resume and Remove; broker orders and position checks used MRPC terminal REST. This is an MT5 demo result, not MT4 broker execution coverage or an extended load test. The auth-only checks and sanitized trade evidence are stored in `tests/live-auth-2026-11-10.json` and `tests/live-trading-2026-11-10.json`.
+This SDK exposes copier management operations; the test verified events through the authenticated WebSocket endpoint. The test used the SDK for Start, List, Pause, Resume and Remove; broker orders and position checks used MRPC terminal REST. This section records the MT5 demo run; the independent MT4 result appears above. Neither run is an extended load test. The auth-only checks and sanitized trade evidence are stored in `tests/live-auth-2026-11-10.json` and `tests/live-trading-2026-11-10.json`.
 
 The run uncovered three backend faults: incorrectly escaped gRPC ingress routing, WebSocket events confined to one pod, and a pause handled by another pod leaving stale running state. Routing was corrected, log events now fan out through Redis, and follower sends check durable pause/removal state. The final matrix ran against backend commit `dcdaa53b` on all three staging pods. The terminal capacity blocker was resolved before this acceptance run. SDK demo helpers were also hardened so server errors cannot look like successful empty responses.
 
