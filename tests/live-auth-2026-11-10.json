@@ -6,5 +6,22 @@
   "environment": "https://copyback-stg.mrpc.pro",
   "date": "2026-11-10",
   "trade_execution": "blocked: staging MT5 terminal limit reached",
-  "trades_placed": 0
+  "trades_placed": 0,
+  "rest_and_websocket_header_checks": [
+    {
+      "credential": "valid",
+      "record_read_http": 200,
+      "logs_upgrade_http": 101
+    },
+    {
+      "credential": "missing",
+      "record_read_http": 401,
+      "logs_upgrade_http": 401
+    },
+    {
+      "credential": "invalid",
+      "record_read_http": 403,
+      "logs_upgrade_http": 403
+    }
+  ]
 }

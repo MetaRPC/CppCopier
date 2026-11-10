@@ -47,10 +47,13 @@ The native client was tested against `copyback-stg.mrpc.pro` after correcting th
 | List using a valid owner key | Passed against the live service |
 | List using an invalid owner key | Rejected |
 | List using an empty owner key | Rejected, before connection where supported |
+| Guarded REST read and WebSocket log upgrade with the valid owner key | HTTP 200 / 101 |
+| Same REST read and WebSocket upgrade without ApiKey | HTTP 401 / 401 |
+| Same REST read and WebSocket upgrade with an invalid ApiKey | HTTP 403 / 403 |
 | Open and close replicated demo trades | Not run: staging terminal capacity reached |
 | Sizing, pause/resume and server trade logs | Not run: requires connected demo terminals |
 
-Two new disposable MT5 demo accounts were provisioned, but `ConnectEx` returned `MAX_TERMINALS_PER_POD_REACHED` at the staging host's 30-terminal limit. No trades were placed. The three successful connection/authentication checks must not be presented as a completed trading acceptance test.
+Two new disposable MT5 demo accounts were provisioned, but `ConnectEx` returned `MAX_TERMINALS_PER_POD_REACHED` at the staging host's 30-terminal limit. No trades were placed. These successful connection/authentication checks must not be presented as a completed trading acceptance test.
 
 Terminal REST helpers now reject an MRPC `error` envelope even when the HTTP status is 200, rather than returning an empty terminal ID, zero order ticket or empty position list. Offline regression tests cover this behavior. The cURL repository has no terminal-helper library; its acceptance adapter reports unsuccessful responses as failures.
 
