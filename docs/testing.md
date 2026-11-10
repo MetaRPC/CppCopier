@@ -1,5 +1,51 @@
 # Testing and contributing
 
+## cTrader and TradeLocker acceptance: November 10, 2026
+
+**Passed with the actual CppCopier client in four directions:** HEROFX TradeLocker demo → MetaQuotes MT5 demo, MT5 → TradeLocker, Spotware cTrader demo → MT5, and MT5 → cTrader. These are executed broker trades, not just connection checks.
+
+| Check | Result per direction |
+|---|---|
+| Open and close | Six EURUSD master/follower pairs opened and closed |
+| LotMultiplier | 0.01 master lot copied as 0.02, including a sell after resume |
+| FixedLot | Follower opened 0.03 lot |
+| BalanceMultiplier / EquityMultiplier | Actual follower volume matched the formula using current account values |
+| FixedBalanceMultiplier | Fixed master balance set to half the follower balance: 0.01 copied as 0.02 |
+| Pause and resume | Separate master trade produced no follower during six seconds paused; new trade copied after resume |
+| Logs | Live success event matched both exact tickets; persisted history matched the master |
+| ApiKey errors | Empty/invalid owner keys refused; missing/invalid headers could not read the copier; invalid-key Pause refused |
+| Cleanup | Seven master and six follower positions closed; five test copiers removed and absence checked |
+
+This SDK completed **24 copied pairs**, four additional master-only pause checks and 20 removed copiers. Across all nine SDKs, the matrix completed **216 copied pairs**, closed 252 master and 216 follower positions, and removed 180 copiers. Final checks found all three demo accounts empty, with no working orders. Both test provider registrations were removed and all three test sessions disconnected.
+
+### What the tests exercised
+
+Copier lifecycle calls used this SDK. Broker mutations and position verification used provider/terminal REST. Python, Node.js and C# used their own streaming helpers; the other clients verified the authenticated WebSocket alongside their native copier calls. EURUSD metadata on both provider demos specified 100,000 units per lot and a 1,000-unit minimum/step. Other instruments may differ.
+
+The cTrader demo uses EUR and has a much smaller balance than the MT5 demo. Balance/equity cases selected explicit multipliers from current account values to target 0.02 follower lot, then compared actual fills with the calculated volume. The copier currently compares raw numeric account values, **without currency conversion**. This run verifies that existing behavior; it does not establish equivalent monetary risk across currencies. The exact inputs and expected volumes are included in cTrader evidence.
+
+### Issues found and corrected
+
+- Website-owner registration no longer requires a duplicate local copier user row; ownership must still be verified.
+- Provider-session Start accepts an empty MetaTrader password only for an owned, matching CT/TL registration. Mismatched accounts, sessions, servers and owners remain rejected.
+- Node.js preserves unsafe JSON integers as strings, preventing TradeLocker ticket rounding in WebSocket logs. Its type definitions now include all supported routes and nested log orders.
+- The runner distinguishes an in-flight market order from an unexpected pending order. A stopped exploratory run was reconciled, and the complete case rerun; final cleanup still requires no positions or orders.
+- A C# reverse cTrader attempt stopped on an MT5 read timeout (HTTP 504) before sending its next order. Both accounts were confirmed flat, then the complete case reran. Staging Redis pods had just been recreated; this is a correlation, not a proven cause. The totals above cover successful acceptance runs; interrupted exploratory attempts are recorded separately in the evidence.
+- A C++ reverse attempt also stopped on a direct WebSocket handshake timeout before its next trade. Cleanup and flat broker state were verified, then the entire case reran. The handshake timeout's root cause was not established; this matrix is not an availability or endurance certification.
+
+- A cURL reverse attempt received a cTrader `MARKET_CLOSED` rejection. Its master position was closed and its copier removed. After maintenance, the full case passed; the rejected attempt is recorded separately and excluded from successful totals.
+
+The backend regression suite passed **1,666 tests**, with 37 optional integration tests skipped. SDK offline suites and strict documentation checks are run separately from these broker tests.
+
+### Evidence and limits
+
+- [TradeLocker execution evidence](https://github.com/MetaRPC/CppCopier/blob/main/tests/live-tradelocker-trading-2026-11-10.json)
+- [cTrader execution evidence](https://github.com/MetaRPC/CppCopier/blob/main/tests/live-ctrader-trading-2026-11-10.json)
+- [Provider setup, identifiers and quantity conversion](providers.md)
+
+Scope is EURUSD market positions on the named demos, with MT5 as the counterpart. This does not establish CT↔TL, same-provider CT/TL copying, every broker/instrument, pending-order copying, endurance, or production deployment. The two backend fixes were deployed to staging for these checks.
+
+
 ## Three layers of evidence
 
 1. **Offline tests:** authentication, request fields, response/error handling without broker credentials.

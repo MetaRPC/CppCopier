@@ -1,0 +1,521 @@
+{
+  "backend_commit": "be35ccf",
+  "backend_image": "reg.mtapi.io:5050/root/tradecopy:26.11.10-20.46",
+  "scope": "Spotware cTrader demo and MetaQuotes MT5 demo, EURUSD, both directions. Native SDK copier lifecycle; provider/terminal REST broker execution.",
+  "runs": [
+    {
+      "sdk": "CppCopier",
+      "environment": "https://copyback-stg.mrpc.pro:443",
+      "utc": "2026-11-10T21:13:11Z",
+      "direction": "CT-MT5",
+      "checks": [
+        "master has one EURUSD instrument",
+        "master symbol detail matches selected instrument",
+        "master provider quantity mapping is 100000 units per lot",
+        "master permits 0.01-lot steps",
+        "master is the expected demo account",
+        "master starts empty",
+        "master has no working orders at preflight",
+        "slave is the expected demo account",
+        "slave starts empty",
+        "slave has no working orders at preflight",
+        "explicit EUR/USD numeric-balance test",
+        "authenticated List succeeds",
+        "invalid owner key refused",
+        "empty owner key refused",
+        "positive balances permit explicit bounded sizing multipliers",
+        "LotMultiplier Start returned an ID",
+        "new copier appears active in List",
+        "missing ApiKey cannot read copier",
+        "invalid ApiKey cannot read copier",
+        "invalid key cannot pause owned copier",
+        "master empty before opening",
+        "master trade is EURUSD 0.01",
+        "provider command confirms actual master position",
+        "copied symbol and direction match",
+        "follower size is .02",
+        "live log matches master and follower",
+        "REST trade history contains the successful master ticket",
+        "master close copied to follower",
+        "Pause visible in List",
+        "master empty before opening",
+        "master trade is EURUSD 0.01",
+        "provider command confirms actual master position",
+        "paused copier did not open a follower trade for six seconds",
+        "Resume visible in List",
+        "master empty before opening",
+        "master trade is EURUSD 0.01",
+        "provider command confirms actual master position",
+        "copied symbol and direction match",
+        "follower size is .02",
+        "live log matches master and follower",
+        "REST trade history contains the successful master ticket",
+        "master close copied to follower",
+        "Remove confirmed by List",
+        "FixedLot Start returned an ID",
+        "new copier appears active in List",
+        "missing ApiKey cannot read copier",
+        "invalid ApiKey cannot read copier",
+        "invalid key cannot pause owned copier",
+        "master empty before opening",
+        "master trade is EURUSD 0.01",
+        "provider command confirms actual master position",
+        "copied symbol and direction match",
+        "follower size is .03",
+        "live log matches master and follower",
+        "REST trade history contains the successful master ticket",
+        "master close copied to follower",
+        "Remove confirmed by List",
+        "BalanceMultiplier Start returned an ID",
+        "new copier appears active in List",
+        "missing ApiKey cannot read copier",
+        "invalid ApiKey cannot read copier",
+        "invalid key cannot pause owned copier",
+        "master empty before opening",
+        "master trade is EURUSD 0.01",
+        "provider command confirms actual master position",
+        "copied symbol and direction match",
+        "follower size is 0.02",
+        "live log matches master and follower",
+        "REST trade history contains the successful master ticket",
+        "master close copied to follower",
+        "Remove confirmed by List",
+        "EquityMultiplier Start returned an ID",
+        "new copier appears active in List",
+        "missing ApiKey cannot read copier",
+        "invalid ApiKey cannot read copier",
+        "invalid key cannot pause owned copier",
+        "master empty before opening",
+        "master trade is EURUSD 0.01",
+        "provider command confirms actual master position",
+        "copied symbol and direction match",
+        "follower size is 0.02",
+        "live log matches master and follower",
+        "REST trade history contains the successful master ticket",
+        "master close copied to follower",
+        "Remove confirmed by List",
+        "FixedBalanceMultiplier Start returned an ID",
+        "new copier appears active in List",
+        "missing ApiKey cannot read copier",
+        "invalid ApiKey cannot read copier",
+        "invalid key cannot pause owned copier",
+        "master empty before opening",
+        "master trade is EURUSD 0.01",
+        "provider command confirms actual master position",
+        "copied symbol and direction match",
+        "follower size is 0.02",
+        "live log matches master and follower",
+        "REST trade history contains the successful master ticket",
+        "master close copied to follower",
+        "Remove confirmed by List"
+      ],
+      "trades": [
+        {
+          "master_ticket": "302255067",
+          "slave_ticket": "59275490127",
+          "symbol": "EURUSD",
+          "master_lots": "0.01",
+          "slave_lots": 0.02,
+          "sizing_mode": "LotMultiplier"
+        },
+        {
+          "master_ticket": "302255103",
+          "slave_ticket": "59275490405",
+          "symbol": "EURUSD",
+          "master_lots": "0.01",
+          "slave_lots": 0.02,
+          "sizing_mode": "LotMultiplier after resume"
+        },
+        {
+          "master_ticket": "302255106",
+          "slave_ticket": "59275490477",
+          "symbol": "EURUSD",
+          "master_lots": "0.01",
+          "slave_lots": 0.03,
+          "sizing_mode": "FixedLot"
+        },
+        {
+          "master_ticket": "302255115",
+          "slave_ticket": "59275490525",
+          "symbol": "EURUSD",
+          "master_lots": "0.01",
+          "slave_lots": 0.02,
+          "sizing_mode": "BalanceMultiplier"
+        },
+        {
+          "master_ticket": "302255130",
+          "slave_ticket": "59275490601",
+          "symbol": "EURUSD",
+          "master_lots": "0.01",
+          "slave_lots": 0.02,
+          "sizing_mode": "EquityMultiplier"
+        },
+        {
+          "master_ticket": "302255150",
+          "slave_ticket": "59275490642",
+          "symbol": "EURUSD",
+          "master_lots": "0.01",
+          "slave_lots": 0.02,
+          "sizing_mode": "FixedBalanceMultiplier"
+        }
+      ],
+      "passed": true,
+      "log_transport": "authenticated WebSocket (SDK exposes RPC operations only)",
+      "cleanup_errors": [],
+      "paused_master_tickets": [
+        "302255073"
+      ],
+      "instruments": {
+        "master": {
+          "id": "1",
+          "name": "EURUSD",
+          "lotSize": {
+            "value": "100000"
+          },
+          "minQuantity": {
+            "value": "1000"
+          },
+          "maxQuantity": {
+            "value": "10000000"
+          },
+          "quantityStep": {
+            "value": "1000"
+          }
+        }
+      },
+      "sizing_cases": [
+        {
+          "risk": "BalanceMultiplier",
+          "master_value": "979.96",
+          "slave_value": "99997.29",
+          "multiplier": "0.01959973115271423855586486394",
+          "fixed_master_balance": "",
+          "expected_lots": "0.02",
+          "master_currency": "EUR",
+          "slave_currency": "USD"
+        },
+        {
+          "risk": "EquityMultiplier",
+          "master_value": "979.86",
+          "slave_value": "99997.27",
+          "multiplier": "0.01959773501816599593168893511",
+          "fixed_master_balance": "",
+          "expected_lots": "0.02",
+          "master_currency": "EUR",
+          "slave_currency": "USD"
+        },
+        {
+          "risk": "FixedBalanceMultiplier",
+          "master_value": "979.76",
+          "slave_value": "99997.25",
+          "multiplier": "1",
+          "fixed_master_balance": "49998.625",
+          "expected_lots": "0.02",
+          "master_currency": "EUR",
+          "slave_currency": "USD"
+        }
+      ],
+      "transient_market_orders": []
+    },
+    {
+      "sdk": "CppCopier",
+      "environment": "https://copyback-stg.mrpc.pro:443",
+      "utc": "2026-11-10T21:28:20Z",
+      "direction": "MT5-CT",
+      "checks": [
+        "slave has one EURUSD instrument",
+        "slave symbol detail matches selected instrument",
+        "slave provider quantity mapping is 100000 units per lot",
+        "slave permits 0.01-lot steps",
+        "master is the expected demo account",
+        "master starts empty",
+        "master has no working orders at preflight",
+        "slave is the expected demo account",
+        "slave starts empty",
+        "slave has no working orders at preflight",
+        "explicit EUR/USD numeric-balance test",
+        "authenticated List succeeds",
+        "invalid owner key refused",
+        "empty owner key refused",
+        "positive balances permit explicit bounded sizing multipliers",
+        "LotMultiplier Start returned an ID",
+        "new copier appears active in List",
+        "missing ApiKey cannot read copier",
+        "invalid ApiKey cannot read copier",
+        "invalid key cannot pause owned copier",
+        "master empty before opening",
+        "master trade is EURUSD 0.01",
+        "copied symbol and direction match",
+        "follower size is .02",
+        "live log matches master and follower",
+        "REST trade history contains the successful master ticket",
+        "master close copied to follower",
+        "Pause visible in List",
+        "master empty before opening",
+        "master trade is EURUSD 0.01",
+        "paused copier did not open a follower trade for six seconds",
+        "Resume visible in List",
+        "master empty before opening",
+        "master trade is EURUSD 0.01",
+        "copied symbol and direction match",
+        "follower size is .02",
+        "live log matches master and follower",
+        "REST trade history contains the successful master ticket",
+        "master close copied to follower",
+        "Remove confirmed by List",
+        "FixedLot Start returned an ID",
+        "new copier appears active in List",
+        "missing ApiKey cannot read copier",
+        "invalid ApiKey cannot read copier",
+        "invalid key cannot pause owned copier",
+        "master empty before opening",
+        "master trade is EURUSD 0.01",
+        "copied symbol and direction match",
+        "follower size is .03",
+        "live log matches master and follower",
+        "REST trade history contains the successful master ticket",
+        "master close copied to follower",
+        "Remove confirmed by List",
+        "BalanceMultiplier Start returned an ID",
+        "new copier appears active in List",
+        "missing ApiKey cannot read copier",
+        "invalid ApiKey cannot read copier",
+        "invalid key cannot pause owned copier",
+        "master empty before opening",
+        "master trade is EURUSD 0.01",
+        "copied symbol and direction match",
+        "follower size is 0.02",
+        "live log matches master and follower",
+        "REST trade history contains the successful master ticket",
+        "master close copied to follower",
+        "Remove confirmed by List",
+        "EquityMultiplier Start returned an ID",
+        "new copier appears active in List",
+        "missing ApiKey cannot read copier",
+        "invalid ApiKey cannot read copier",
+        "invalid key cannot pause owned copier",
+        "master empty before opening",
+        "master trade is EURUSD 0.01",
+        "copied symbol and direction match",
+        "follower size is 0.02",
+        "live log matches master and follower",
+        "REST trade history contains the successful master ticket",
+        "master close copied to follower",
+        "Remove confirmed by List",
+        "FixedBalanceMultiplier Start returned an ID",
+        "new copier appears active in List",
+        "missing ApiKey cannot read copier",
+        "invalid ApiKey cannot read copier",
+        "invalid key cannot pause owned copier",
+        "master empty before opening",
+        "master trade is EURUSD 0.01",
+        "copied symbol and direction match",
+        "follower size is 0.02",
+        "live log matches master and follower",
+        "REST trade history contains the successful master ticket",
+        "master close copied to follower",
+        "Remove confirmed by List"
+      ],
+      "trades": [
+        {
+          "master_ticket": "59275512307",
+          "slave_ticket": "302257770",
+          "symbol": "EURUSD",
+          "master_lots": 0.01,
+          "slave_lots": "0.02",
+          "sizing_mode": "LotMultiplier"
+        },
+        {
+          "master_ticket": "59275512591",
+          "slave_ticket": "302257799",
+          "symbol": "EURUSD",
+          "master_lots": 0.01,
+          "slave_lots": "0.02",
+          "sizing_mode": "LotMultiplier after resume"
+        },
+        {
+          "master_ticket": "59275512677",
+          "slave_ticket": "302257811",
+          "symbol": "EURUSD",
+          "master_lots": 0.01,
+          "slave_lots": "0.03",
+          "sizing_mode": "FixedLot"
+        },
+        {
+          "master_ticket": "59275512732",
+          "slave_ticket": "302257817",
+          "symbol": "EURUSD",
+          "master_lots": 0.01,
+          "slave_lots": "0.02",
+          "sizing_mode": "BalanceMultiplier"
+        },
+        {
+          "master_ticket": "59275512855",
+          "slave_ticket": "302257828",
+          "symbol": "EURUSD",
+          "master_lots": 0.01,
+          "slave_lots": "0.02",
+          "sizing_mode": "EquityMultiplier"
+        },
+        {
+          "master_ticket": "59275512976",
+          "slave_ticket": "302257838",
+          "symbol": "EURUSD",
+          "master_lots": 0.01,
+          "slave_lots": "0.02",
+          "sizing_mode": "FixedBalanceMultiplier"
+        }
+      ],
+      "passed": true,
+      "log_transport": "authenticated WebSocket (SDK exposes RPC operations only)",
+      "cleanup_errors": [],
+      "paused_master_tickets": [
+        "59275512383"
+      ],
+      "instruments": {
+        "slave": {
+          "id": "1",
+          "name": "EURUSD",
+          "lotSize": {
+            "value": "100000"
+          },
+          "minQuantity": {
+            "value": "1000"
+          },
+          "maxQuantity": {
+            "value": "10000000"
+          },
+          "quantityStep": {
+            "value": "1000"
+          }
+        }
+      },
+      "sizing_cases": [
+        {
+          "risk": "BalanceMultiplier",
+          "master_value": "99995.92",
+          "slave_value": "970.03",
+          "multiplier": "206.1707782233539168891683762",
+          "fixed_master_balance": "",
+          "expected_lots": "0.02",
+          "master_currency": "USD",
+          "slave_currency": "EUR"
+        },
+        {
+          "risk": "EquityMultiplier",
+          "master_value": "99995.92",
+          "slave_value": "969.81",
+          "multiplier": "206.2175477670883987585197100",
+          "fixed_master_balance": "",
+          "expected_lots": "0.02",
+          "master_currency": "USD",
+          "slave_currency": "EUR"
+        },
+        {
+          "risk": "FixedBalanceMultiplier",
+          "master_value": "99995.92",
+          "slave_value": "969.59",
+          "multiplier": "1",
+          "fixed_master_balance": "484.795",
+          "expected_lots": "0.02",
+          "master_currency": "USD",
+          "slave_currency": "EUR"
+        }
+      ],
+      "transient_market_orders": []
+    }
+  ],
+  "provider_service_auth": [
+    {
+      "key": "missing",
+      "http_status": 404,
+      "error": {
+        "code": "NotFound",
+        "reason": "TERMINAL_INSTANCE_NOT_FOUND",
+        "message": "TERMINAL_INSTANCE_NOT_FOUND: Connection not found, disconnected or expired; Connect again."
+      }
+    },
+    {
+      "key": "invalid",
+      "http_status": 401,
+      "error": {
+        "code": "Unauthenticated",
+        "reason": "API_KEY_INVALID",
+        "message": "API_KEY_INVALID: The API key is not recognised."
+      }
+    },
+    {
+      "key": "valid",
+      "http_status": 200,
+      "error": null
+    }
+  ],
+  "final_cleanup": [
+    {
+      "provider": "TL",
+      "empty_before_disconnect": true,
+      "test_account_record_removed": true,
+      "session_disconnected": true
+    },
+    {
+      "provider": "CT",
+      "empty_before_disconnect": true,
+      "test_account_record_removed": true,
+      "session_disconnected": true
+    },
+    {
+      "provider": "MT5",
+      "empty_before_disconnect": true,
+      "test_terminal_disconnected": true
+    }
+  ],
+  "exploratory_attempts": {
+    "exploratory_node_run": {
+      "copied_pairs_opened_and_closed": 1,
+      "result": "Log ticket matching failed before unsafe-integer parsing fix; rerun passed",
+      "cleanup_confirmed": true
+    },
+    "transient_order_runner_retry": {
+      "result": "Runner initially rejected a working order; updated to allow only market orders during execution, then complete case rerun",
+      "original_cleanup_errors": [
+        "slave: Unexpected working provider order"
+      ],
+      "both_accounts_and_orders_verified_empty_afterward": true,
+      "test_copiers_absent": true
+    },
+    "mt5_read_timeout_retry": {
+      "result": "MT5 OpenedOrders returned HTTP 504 before the next order; both accounts were verified flat and the complete C# case rerun",
+      "completed_pairs_in_interrupted_attempt": 2,
+      "cleanup_confirmed": true,
+      "infrastructure_observation": "Staging Redis pods had just been recreated; correlation only, not a proven root cause",
+      "second_attempt": {
+        "copied_pairs": 0,
+        "original_cleanup_errors": [
+          "master: /OpenedOrders: 504"
+        ],
+        "final_flat_state_confirmed": true,
+        "test_copier_absent": true,
+        "result": "No order submitted; cleanup read timed out during infrastructure replacement, then verified after recovery"
+      }
+    },
+    "stream_handshake_retry": {
+      "result": "Direct WebSocket handshake timed out before next trade; complete C++ case rerun",
+      "completed_pairs_in_interrupted_attempt": 4,
+      "cleanup_confirmed": true,
+      "root_cause": "Not established"
+    },
+    "maintenance_pause": {
+      "result": "User confirmed infrastructure maintenance and requested waiting; active cURL case stopped, its paused master trade closed and copier removed before later full rerun",
+      "cleanup_confirmed": true,
+      "master_positions_closed_during_pause": 1,
+      "follower_positions_closed_during_pause": 0
+    },
+    "broker_market_closed_retry": {
+      "result": "cTrader rejected OrderSend with MARKET_CLOSED during an exploratory attempt; master position closed and copier removed, then complete cURL case passed after maintenance",
+      "completed_pairs_in_interrupted_attempt": 0,
+      "cleanup_confirmed": true,
+      "broker_error": "MARKET_CLOSED",
+      "classification": "Broker rejection, not counted as successful copying"
+    }
+  }
+}

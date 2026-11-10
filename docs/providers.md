@@ -17,7 +17,7 @@ Use the same copier lifecycle with a different account route. Broker authenticat
 | Provider session ID | Registered record's `apiId`; supplied as SDK `Account.id`, without reformatting |
 | Broker account ID | Registered record's `user`; supplied as SDK `Account.user` |
 
-A registered account ID and a provider session ID are different identifiers. Keep large numeric IDs as strings in JavaScript. Use the server returned by registration in the copier request; do not replace it with the broker authentication server name.
+A registered account ID and a provider session ID are different identifiers. For cTrader, the authorized API account ID can also differ from the account number displayed in the trading interface; use the ID returned by provider authorization. Keep large numeric IDs as strings in JavaScript. Use the server returned by registration in the copier request; do not replace it with the broker authentication server name.
 
 ## 1. Register the demo account
 
@@ -101,11 +101,19 @@ Balance and equity modes currently compare raw numeric account values, without c
 During execution, a market order may briefly appear in the provider order list before its position is visible. Distinguish it from a pending limit/stop order and wait for the broker state to settle; initial and final cleanup checks must still require no working orders.
 A successful login, Start response or order submission is insufficient evidence of a fill. Provider commands have a request ID and execution state; on an uncertain result, query that same command and reconcile positions. Do not blindly repeat a mutation with a new request ID.
 
+A broker rejection such as `MARKET_CLOSED` is not a copied trade. Check the provider command and copier error log, reconcile any master position, and confirm the instrument can trade before starting a fresh test. Do not classify a rejected order as a successful fill or automatically resubmit it.
+
 TradeLocker events use provider polling, so allow for delivery delay. A stream is not durable replay: after a disconnect, reconcile broker positions and persisted logs. See [trade logs](logs.md) for each SDK's streaming support.
 
 ## Authentication failures
 
 Send the provider service key as `ApiKey` and the session as `id`. A missing key must not reveal a session belonging to another owner. In the staging checks, an absent key returned 404 (`TERMINAL_INSTANCE_NOT_FOUND`), an invalid key returned 401 (`API_KEY_INVALID`), and the correct key returned the account summary. Do not assume every missing-key path returns 401; verify that account data remains inaccessible.
+
+## If staging changes during a run
+
+A deployment or Redis replacement can invalidate a terminal session or interrupt reads. Stop submitting new test orders, reconcile both broker position/order lists, and remove only the test copier. A 504 from a read is not evidence of a failed broker mutation. If an order submission was uncertain, query its original command ID before doing anything else.
+
+Wait for terminal/session health to recover, reconnect the demo account if its old session is absent, update the registered identifiers where required, and run the entire affected case again. Keep the interrupted result and its cleanup status in the audit evidence. Do not weaken authentication or reuse another customer's session to get a passing test.
 
 ## Verified scope
 
