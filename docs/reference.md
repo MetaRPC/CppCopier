@@ -33,14 +33,16 @@ Set booleans explicitly. Raw protobuf bools default to false; convenience defaul
 
 | Field | Type | Meaning |
 |---|---|---|
-| `type` | string | `MT4` or `MT5` for the core model; use the deployment's supported account route |
-| `user` | uint64 | Broker login, not API key |
-| `password` | string | Broker password; secret |
-| `server` | string | Exact broker server |
+| `type` | string | `MT4`, `MT5`, `MT4_MTAPI`, `MT5_MTAPI`, `MT4_MRPC`, `MT5_MRPC`, `CT` or `TL`; the deployment must enable the route |
+| `user` | uint64 | Broker login or registered CT/TL account ID, not an API key |
+| `password` | string | MetaTrader trading password; empty for a registered CT/TL session |
+| `server` | string | Exact broker server, or the server returned by provider registration |
 | `name` | string | Optional display label |
-| `id` | string | Optional connected terminal/session ID |
+| `id` | string | Connected terminal/session ID; required for CT/TL. Preserve its exact format |
 
 Preserve 64-bit identifier precision. Node's underlying proto loader represents 64-bit response values as strings; do not round identifiers through floating-point conversions.
+
+For provider authentication, session setup and units, see [cTrader and TradeLocker](providers.md).
 
 ## Transport and version boundaries
 

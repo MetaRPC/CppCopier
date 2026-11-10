@@ -57,6 +57,7 @@ nav:
       - Lifecycle recipes: recipes.md
   - Build:
       - API reference: reference.md
+      - cTrader and TradeLocker: providers.md
       - Position sizing: sizing.md
       - Trade logs: logs.md
   - Operate:

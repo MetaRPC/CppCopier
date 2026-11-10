@@ -60,7 +60,7 @@ Trade events were checked through the authenticated WebSocket endpoint alongside
 
 ### Repeating the MT4 check
 
-Set the native acceptance adapter’s `COPIER_PLATFORM` environment variable to `MT4` before invoking it. The default remains `MT5`; other values are rejected. The 13 standard-input fields below are unchanged. Both account types will be `MT4`; provide MT4 demo credentials and their MT4 terminal GUIDs.
+Set the native acceptance adapter’s `COPIER_PLATFORM` environment variable to `MT4` before invoking it. The default remains `MT5`; CT/TL overrides are described in the provider setup section below. The 13 standard-input fields below are unchanged. Both account types will be `MT4`; provide MT4 demo credentials and their MT4 terminal GUIDs.
 
 ```bash
 export COPIER_PLATFORM=MT4
@@ -114,11 +114,11 @@ Run the adapter with one of these argument lists: `list`, `start`, `pause COPIER
 3. Master login.
 4. Master trading password.
 5. Master broker server.
-6. Master terminal GUID for the copier API.
+6. Master terminal/session ID for the copier API (preserve provider session IDs exactly).
 7. Follower login.
 8. Follower trading password.
 9. Follower broker server.
-10. Follower terminal GUID for the copier API.
+10. Follower terminal/session ID for the copier API (preserve provider session IDs exactly).
 11. Risk mode.
 12. Risk value.
 13. Fixed master balance, or a blank line when unused.
@@ -132,3 +132,16 @@ Build the SDK first, then invoke:
 ```
 
 The adapter alone does not verify that an account is a demo or clean up trades. The acceptance runner must verify account identity and demo mode, start with empty positions, inspect actual follower tickets/lots and log events, and close only its own test trades before removing its copier. Do not run mutation commands against existing customer copiers.
+
+
+### cTrader and TradeLocker setup
+
+Choose each side independently with `COPIER_MASTER_PLATFORM` and `COPIER_SLAVE_PLATFORM` (`MT4`, `MT5`, `CT` or `TL`). If omitted, each uses `COPIER_PLATFORM`, which defaults to `MT5`.
+
+Authenticate a CT/TL demo account through `POST /AddProviderAccount` first. Send the owner key in the `ApiKey` header; put provider credentials and the provider service key in the JSON body. The provider service key is separate from the copier owner's key. cTrader uses access/refresh tokens; TradeLocker uses email, password and server. Never put these credentials in a repository or a logged URL.
+
+Use the registered account's provider, login/account ID, server and exact session ID for SDK Start. Leave its password field empty. The backend verifies the account belongs to the owner before attaching. A random session ID, another owner's session, a hidden account or mismatched login/server/provider is refused. MetaTrader credential starts continue to require their trading password. The backend must include the provider-session Start fix; older builds incorrectly reject the empty provider password.
+
+Copier risk sizes are **lots**. CT/TL broker APIs use **units**: obtain `lotSize`, `minQuantity` and `quantityStep` from `/SymbolInfo`, rather than assuming every symbol is a forex contract. For the HEROFX EURUSD demo instrument checked on November 10, one lot is 100,000 units and the minimum/step is 1,000 units (0.01 lot). Do not generalize this mapping to other instruments.
+
+These setup instructions describe the supported flow, not proof of broker execution. See the dated acceptance evidence for the providers and directions actually tested. Never treat a successful login or Start response as proof that a follower trade filled.

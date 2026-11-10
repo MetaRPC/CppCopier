@@ -31,7 +31,7 @@ service CopierService {
 
 // A trading account to connect to.
 message Account {
-  // "MT4" or "MT5".
+  // MT4, MT5, MT4_MTAPI, MT5_MTAPI, MT4_MRPC, MT5_MRPC, CT or TL.
   string type = 1;
   uint64 user = 2;
   string password = 3;
