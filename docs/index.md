@@ -51,3 +51,9 @@ int main() {
 ```
 
 [Full setup](quickstart.md) · [Testing guide](testing.md) · [All SDKs](sdks.md)
+
+## Watch a real demo failure and recovery
+
+[Copier troubleshooting video](https://mrpc.pro/tutorials/console/copier-troubleshooting) follows an oversized follower request from its broker rejection through a corrected demo opening and closing. It demonstrates the control-panel workflow; the [lifecycle recipes](recipes.md), [sizing guide](sizing.md) and [error guide](troubleshooting.md) explain how to apply the checks in this SDK.
+
+Use disposable demo accounts first. Hosted service usage is paid; consult [current pricing](https://mrpc.pro/#pricing). A successful management response does not prove that a broker executed the copied trade.
