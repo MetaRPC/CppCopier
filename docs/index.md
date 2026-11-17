@@ -52,6 +52,17 @@ int main() {
 
 [Full setup](quickstart.md) · [Testing guide](testing.md) · [All SDKs](sdks.md)
 
+## Plan an MT4 or MT5 copier integration
+
+Use these free resources before connecting disposable demo accounts:
+
+- [Choose your setup and review service costs](https://mrpc.pro/start/copier?lang=en&utm_source=github&utm_medium=referral&utm_campaign=copier_sdk_setup_nov17&utm_content=cppcopier_docs_setup) — compare the control-panel workflow with SDK integration. Hosted terminals and running copiers are billed separately, including on broker demo accounts.
+- [Check follower lot sizing](https://mrpc.pro/tools/copier-sizing?lang=en&utm_source=github&utm_medium=referral&utm_campaign=copier_sdk_setup_nov17&utm_content=cppcopier_docs_sizing) — preview requested volume and broker minimum/maximum/step conflicts. This is a worksheet, not a broker quote or a guarantee of equal financial risk.
+- [Review symbol mapping](https://mrpc.pro/tools/symbol-mapping?lang=en&utm_source=github&utm_medium=referral&utm_campaign=copier_sdk_setup_nov17&utm_content=cppcopier_docs_symbols) — compare symbol names, then verify the actual contract specifications with each broker before copying.
+- [Work through the migration checklist](https://mrpc.pro/guides/copier-migration?lang=en&utm_source=github&utm_medium=referral&utm_campaign=copier_sdk_setup_nov17&utm_content=cppcopier_docs_migration) — validate sizing, one demo opening and closing, pause/resume and rejection logs before moving an integration.
+
+These tools do not place trades or connect your accounts. MetaRPC provides developer APIs and hosted software; we do not manage or invest customer funds. Use this SDK's quickstart and recipes for the actual API calls.
+
 ## Watch a real demo failure and recovery
 
 [Copier troubleshooting video](https://mrpc.pro/tutorials/console/copier-troubleshooting) follows an oversized follower request from its broker rejection through a corrected demo opening and closing. It demonstrates the control-panel workflow; the [lifecycle recipes](recipes.md), [sizing guide](sizing.md) and [error guide](troubleshooting.md) explain how to apply the checks in this SDK.

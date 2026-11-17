@@ -29,6 +29,17 @@ This List example is read-only: no account creation or trades. Run CMake from a 
 
 Every SDK call sends `ApiKey` (`apikey` in gRPC metadata). The gRPC body also carries `user_key`; the header does not replace it. `TRIAL` is not an owner key. Read the [verified transport contract](https://metarpc.github.io/CppCopier/authentication/).
 
+## Plan an MT4 or MT5 copier integration
+
+Use these free resources before connecting disposable demo accounts:
+
+- [Choose your setup and review service costs](https://mrpc.pro/start/copier?lang=en&utm_source=github&utm_medium=referral&utm_campaign=copier_sdk_setup_nov17&utm_content=cppcopier_readme_setup) — compare the control-panel workflow with SDK integration. Hosted terminals and running copiers are billed separately, including on broker demo accounts.
+- [Check follower lot sizing](https://mrpc.pro/tools/copier-sizing?lang=en&utm_source=github&utm_medium=referral&utm_campaign=copier_sdk_setup_nov17&utm_content=cppcopier_readme_sizing) — preview requested volume and broker minimum/maximum/step conflicts. This is a worksheet, not a broker quote or a guarantee of equal financial risk.
+- [Review symbol mapping](https://mrpc.pro/tools/symbol-mapping?lang=en&utm_source=github&utm_medium=referral&utm_campaign=copier_sdk_setup_nov17&utm_content=cppcopier_readme_symbols) — compare symbol names, then verify the actual contract specifications with each broker before copying.
+- [Work through the migration checklist](https://mrpc.pro/guides/copier-migration?lang=en&utm_source=github&utm_medium=referral&utm_campaign=copier_sdk_setup_nov17&utm_content=cppcopier_readme_migration) — validate sizing, one demo opening and closing, pause/resume and rejection logs before moving an integration.
+
+These tools do not place trades or connect your accounts. MetaRPC provides developer APIs and hosted software; we do not manage or invest customer funds. Use this SDK's quickstart and recipes for the actual API calls.
+
 ## Demo workflow and troubleshooting
 
 Start with the read-only example above, then use disposable demo accounts for a copying test. The [lifecycle recipes](https://metarpc.github.io/CppCopier/recipes/) show the SDK workflow; [position sizing](https://metarpc.github.io/CppCopier/sizing/) explains the settings, and [troubleshooting](https://metarpc.github.io/CppCopier/troubleshooting/) covers rejected trades and uncertain outcomes.
